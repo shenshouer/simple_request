@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: simple-request
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: simple-request
+    spec:
+      containers:
+      - name: simple-request
+        image: shenshouer/simple_request:2015092401
+        ports:
+        - containerPort: 30001
