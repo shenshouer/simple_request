@@ -2,6 +2,7 @@ package main
 import (
 	"net/http"
 	"log"
+	"encoding/json"
 )
 
 func main() {
@@ -18,6 +19,25 @@ func startHttpServer() {
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("========> 请求来源:",r.RemoteAddr)
-	w.WriteHeader(200)
-	w.Write([]byte(r.RemoteAddr))
+
+	sourceip := r.RemoteAddr
+	url := r.RequestURI
+	referer := r.Referer()
+	host := r.Host
+
+	data := r.Header
+	data.Add("sourceip", sourceip)
+	data.Add("requestUrl", url)
+	data.Add("referer", referer)
+	data.Add("host", host)
+
+	byteData , err := json.Marshal(data)
+	if err != nil{
+		log.Println(err)
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+	}else{
+		w.WriteHeader(200)
+		w.Write(byteData)
+	}
 }
